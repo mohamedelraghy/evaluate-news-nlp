@@ -9,7 +9,8 @@ const app = express();
 const cors = require("cors");
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("dist"));
 
 console.log(__dirname);
@@ -32,7 +33,7 @@ app.post("/api", async function (req, res) {
   const response = await fetch(apiURL);
   const mcData = await response.json();
   console.log(mcData);
-  res.send(mcData);
+  res.status(200).json(mcData);
 });
 
 // designates what port the app will listen to for incoming requests
