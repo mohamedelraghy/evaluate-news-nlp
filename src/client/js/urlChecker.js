@@ -1,13 +1,9 @@
-function checkForURL(inputURL) {
-  var regex = inputURL.match(
-    /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
-  );
-
-  if (regex == null) {
-    return 0;
-  } else {
-    return 1;
-  }
+//found the solution here https://gist.github.com/franciskim/41a959f8e3989254ef5d
+function checkForUrl(value) {
+  var expression =
+    /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+  var regexp = new RegExp(expression);
+  return regexp.test(value);
 }
 
-export { checkForURL };
+export { checkForUrl };

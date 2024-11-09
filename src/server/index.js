@@ -1,42 +1,68 @@
-var path = require("path");
-const express = require("express");
-const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 
+var path = require("path");
+
+const mockAPIResponse = require("./mockAPI.js");
+
+const PORT = 8081;
+
+//require express ==> create instance
+const express = require("express");
 const app = express();
 
+// Cors allows the browser and server to communicate without any security interruptions
 const cors = require("cors");
-
 app.use(cors());
-app.use(express.json());
+
+// body parser
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// static dist
 app.use(express.static("dist"));
 
-console.log(__dirname);
-// Variables for url and api key
+const axios = require("axios");
 
-const baseURL = process.env.BASE_URL;
-const apiKey = process.env.API_KEY;
-let userInput = []; // const does not work
+// API
+const API_KEY = process.env.API_KEY;
+var getUrl = [];
 
 app.get("/", function (req, res) {
-  res.sendFile("dist/index.html");
+  //res.sendFile('dist/index.html')
+  res.sendFile(path.resolve("src/client/views/index.html"));
 });
 
 // POST Route
-app.post("/api", async function (req, res) {
-  userInput = req.body.url;
-  console.log(`You entered: ${userInput}`);
-  const apiURL = `${baseURL}key=${apiKey}&url=${userInput}&lang=en`;
-
-  const response = await fetch(apiURL);
-  const mcData = await response.json();
-  console.log(mcData);
-  res.status(200).json(mcData);
+app.post("/", async (req, res) => {
+  getUrl = req.body.getUrl;
+  const meaningCloudUrl = `https://api.meaningcloud.com/sentiment-2.1?key=${API_KEY}&url=${getUrl}&lang=en`;
+  try {
+    const {
+      data: { sentence_list, agreement, subjectivity, confidence, irony },
+    } = await axios(meaningCloudUrl);
+    res.send({
+      text: sentence_list[0].text || "",
+      agreement: agreement,
+      subjectivity: subjectivity,
+      confidence: confidence,
+      irony: irony,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
-// designates what port the app will listen to for incoming requests
-app.listen(8081, function () {
-  console.log("Example app listening on port 8081!");
+app.get("/test", function (req, res) {
+  res.send(mockAPIResponse);
 });
+
+// Port listening to the requests
+app.listen(PORT, function () {
+  console.log(`Server is running on port ${PORT}!`);
+});
+
+module.exports = {
+  app,
+};
