@@ -13,16 +13,29 @@ app.use(bodyParser.json());
 app.use(express.static("dist"));
 
 console.log(__dirname);
-console.log(`Your API key is ${process.env.API_KEY}`);
 // Variables for url and api key
+
+const baseURL = process.env.BASE_URL;
+const apiKey = process.env.API_KEY;
+let userInput = []; // const does not work
 
 app.get("/", function (req, res) {
   res.sendFile("dist/index.html");
 });
 
 // POST Route
+app.post("/api", async function (req, res) {
+  userInput = req.body.url;
+  console.log(`You entered: ${userInput}`);
+  const apiURL = `${baseURL}key=${apiKey}&url=${userInput}&lang=en`;
 
-// Designates what port the app will listen to for incoming requests
-app.listen(8000, function () {
-  console.log("Example app listening on port 8000!");
+  const response = await fetch(apiURL);
+  const mcData = await response.json();
+  console.log(mcData);
+  res.send(mcData);
+});
+
+// designates what port the app will listen to for incoming requests
+app.listen(8081, function () {
+  console.log("Example app listening on port 8081!");
 });
