@@ -5,19 +5,30 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   entry: "./src/client/index.js",
+  output: {
+    libraryTarget: "var",
+    library: "Client",
+  },
   mode: "development",
   devtool: "source-map",
   stats: "verbose",
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: "/.js$/",
         exclude: /node_modules/,
         loader: "babel-loader",
       },
       {
         test: /\.scss$/,
         use: ["style-loader", "css-loader", "sass-loader"],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        loader: "file-loader",
+        options: {
+          name: "[path][name].[ext]",
+        },
       },
     ],
   },
@@ -35,9 +46,6 @@ module.exports = {
       cleanStaleWebpackAssets: true,
       protectWebpackAssets: false,
     }),
+    new WorkboxPlugin.GenerateSW(),
   ],
-  devServer: {
-    port: 3000,
-    allowedHosts: "all",
-  },
 };
