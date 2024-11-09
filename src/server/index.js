@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(express.static("dist"));
 
 console.log(__dirname);
-
+console.log(`Your API key is ${process.env.API_KEY}`);
 // Variables for url and api key
 
 app.get("/", function (req, res) {
